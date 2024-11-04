@@ -1,0 +1,10 @@
+FROM golang:latest AS builder
+WORKDIR /app
+COPY . . 
+
+# NOTE: ldflags reduces the executable size by removing profiling and debug info
+RUN GOOS=linux CGO_ENABLED=0 go build -ldflags="-s -w" -o server . 
+
+FROM scratch 
+COPY --from=builder /app/server .
+CMD ["./server"]
